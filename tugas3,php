@@ -1,0 +1,43 @@
+// routes/api.php
+
+use App\Http\Controllers\BookController;
+
+Route::get('/books', [BookController::class, 'index']);
+Route::get('/books/{id}', [BookController::class, 'show']);
+Route::post('/books', [BookController::class, 'store']);
+Route::put('/books/{id}', [BookController::class, 'update']);
+Route::delete('/books/{id}', [BookController::class, 'destroy']);
+
+
+
+namespace App\Http\Controllers;
+
+use App\Models\Book;
+use Illuminate\Http\Request;
+
+class BookController extends Controller
+{
+    public function index()
+    {
+        $books = Book::all();
+        return response()->json($books);
+    }
+
+    public function show($id)
+    {
+        $book = Book::find($id);
+        if (!$book) {
+            return response()->json(['message' => 'Book not found'], 404);
+        }
+        return response()->json($book);
+    }
+
+    // method store, update, destroy juga diubah serupa sesuai kebutuhan
+}
+
+
+
+rm resources/views/books.blade.php
+rm resources/views/authors.blade.php
+
+
