@@ -1,0 +1,130 @@
+php artisan make:migration create_authors_table
+php artisan make:migration create_books_table
+
+public function up()
+{
+    Schema::create('authors', function (Blueprint $table) {
+        $table->id();
+        $table->string('name');
+        $table->text('bio')->nullable();
+        $table->timestamps();
+    });
+}
+
+public function up()
+{
+    Schema::create('books', function (Blueprint $table) {
+        $table->id();
+        $table->string('title');
+        $table->foreignId('author_id')->constrained()->onDelete('cascade');
+        $table->text('summary')->nullable();
+        $table->timestamps();
+    });
+}
+
+php artisan migrate
+
+
+php artisan make:seeder AuthorSeeder
+php artisan make:seeder BookSeeder
+
+use App\Models\Author;
+
+public function run()
+{
+    Author::insert([
+        ['name' => 'George Orwell', 'bio' => 'Author of 1984 and Animal Farm'],
+        ['name' => 'J.K. Rowling', 'bio' => 'Author of Harry Potter series'],
+        ['name' => 'Tere Liye', 'bio' => 'Penulis asal Indonesia'],
+        ['name' => 'Stephen King', 'bio' => 'Penulis horor dan thriller'],
+        ['name' => 'Agatha Christie', 'bio' => 'Penulis novel detektif'],
+    ]);
+}
+
+use App\Models\Book;
+
+public function run()
+{
+    Book::insert([
+        ['title' => '1984', 'author_id' => 1, 'summary' => 'Dystopian novel'],
+        ['title' => 'Harry Potter', 'author_id' => 2, 'summary' => 'Wizarding world'],
+        ['title' => 'Hujan', 'author_id' => 3, 'summary' => 'Novel Indonesia'],
+        ['title' => 'The Shining', 'author_id' => 4, 'summary' => 'Horror classic'],
+        ['title' => 'Murder on the Orient Express', 'author_id' => 5, 'summary' => 'Detective novel'],
+    ]);
+}
+
+public function run()
+{
+    $this->call([
+        AuthorSeeder::class,
+        BookSeeder::class,
+    ]);
+}
+
+php artisan db:seed
+
+php artisan make:model Author
+php artisan make:model Book
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Author extends Model
+{
+    protected $fillable = ['name', 'bio'];
+
+    public function books()
+    {
+        return $this->hasMany(Book::class);
+    }
+}
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Book extends Model
+{
+    protected $fillable = ['title', 'author_id', 'summary'];
+
+    public function author()
+    {
+        return $this->belongsTo(Author::class);
+    }
+}
+
+
+php artisan make:controller BookController
+
+use App\Models\Book;
+
+public function index()
+{
+    $books = Book::with('author')->get();
+    return view('books.index', compact('books'));
+}
+
+use App\Http\Controllers\BookController;
+
+Route::get('/books', [BookController::class, 'index']);
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Book List</title>
+</head>
+<body>
+    <h1>Daftar Buku</h1>
+    <ul>
+        @foreach($books as $book)
+            <li>
+                <strong>{{ $book->title }}</strong> oleh {{ $book->author->name }} <br>
+                <em>{{ $book->summary }}</em>
+            </li>
+        @endforeach
+    </ul>
+</body>
+</html>
