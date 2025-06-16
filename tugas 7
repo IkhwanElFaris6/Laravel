@@ -1,0 +1,28 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+class Transaction extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'order_number',
+        'customer_id',
+        'total_amount',
+        // tambahkan kolom lain sesuai kebutuhan
+    ];
+
+    /**
+     * Mendefinisikan relasi many-to-one dengan Customer.
+     * Setiap transaksi dimiliki oleh satu customer.
+     */
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
+    }
+}
+
