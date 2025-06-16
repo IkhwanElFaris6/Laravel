@@ -1,0 +1,79 @@
+php artisan make:controller Api/GenreController
+php artisan make:controller Api/AuthorController
+
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\Genre;
+
+class GenreController extends Controller
+{
+    // Read all data
+    public function index()
+    {
+        $genres = Genre::all();
+        return response()->json($genres);
+    }
+
+    // Create new data
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $genre = Genre::create([
+            'name' => $request->name,
+        ]);
+
+        return response()->json($genre, 201);
+    }
+}
+
+
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\Author;
+
+class AuthorController extends Controller
+{
+    // Read all data
+    public function index()
+    {
+        $authors = Author::all();
+        return response()->json($authors);
+    }
+
+    // Create new data
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $author = Author::create([
+            'name' => $request->name,
+        ]);
+
+        return response()->json($author, 201);
+    }
+}
+
+
+use App\Http\Controllers\Api\GenreController;
+use App\Http\Controllers\Api\AuthorController;
+
+Route::get('/genres', [GenreController::class, 'index']);
+Route::post('/genres', [GenreController::class, 'store']);
+
+Route::get('/authors', [AuthorController::class, 'index']);
+Route::post('/authors', [AuthorController::class, 'store']);
+
+
